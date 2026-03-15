@@ -41,6 +41,7 @@ requirements:
     - freeimage
     - fontconfig
     - xorg-libxt  # [linux]
+    - xorg-xproto  # [linux]
     - rapidjson
     - vtk  # [variant=='all']
   run:
