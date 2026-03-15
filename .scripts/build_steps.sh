@@ -72,13 +72,6 @@ else
         --suppress-variables ${EXTRA_CB_OPTIONS:-} \
         --clobber-file "${CI_SUPPORT}/clobber_${CONFIG}.yaml" \
         --extra-meta flow_run_id="${flow_run_id:-}" remote_url="${remote_url:-}" sha="${sha:-}"
-    ( startgroup "Uploading packages" ) 2> /dev/null
-
-    if [[ "${UPLOAD_PACKAGES}" != "False" ]] && [[ "${IS_PR_BUILD}" == "False" ]]; then
-        upload_package --validate --feedstock-name="${FEEDSTOCK_NAME}"  "${FEEDSTOCK_ROOT}" "${RECIPE_ROOT}" "${CONFIG_FILE}"
-    fi
-
-    ( endgroup "Uploading packages" ) 2> /dev/null
 fi
 
 ( startgroup "Final checks" ) 2> /dev/null

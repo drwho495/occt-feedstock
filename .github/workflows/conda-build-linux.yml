@@ -71,3 +71,10 @@ jobs:
           BINSTAR_TOKEN: ${{ secrets.BINSTAR_TOKEN }}
           FEEDSTOCK_TOKEN: ${{ secrets.FEEDSTOCK_TOKEN }}
           STAGING_BINSTAR_TOKEN: ${{ secrets.STAGING_BINSTAR_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.CONFIG }}
+          path: build_artifacts/linux-*/*.conda
+          if-no-files-found: warn
