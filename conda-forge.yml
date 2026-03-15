@@ -1,7 +1,3 @@
-azure:
-  settings_win:
-    variables:
-      CONDA_BLD_PATH: C:\bld\
 build_platform:
   linux_aarch64: linux_64
   linux_ppc64le: linux_64
@@ -13,7 +9,9 @@ github:
   branch_name: main
   tooling_branch_name: main
 provider:
-  linux_aarch64: default
-  linux_ppc64le: default
-  win: azure
+  linux: github_actions
+  linux_aarch64: github_actions
+  linux_ppc64le: github_actions
+  osx: github_actions
+  win: github_actions
 test: native_and_emulated

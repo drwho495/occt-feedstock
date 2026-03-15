@@ -1,0 +1,55 @@
+# This file was generated automatically from conda-smithy. To update this configuration,
+# update the conda-forge.yml and/or the recipe/meta.yaml.
+# -*- mode: yaml -*-
+
+name: OSX
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.CONFIG }}
+    runs-on: macOS-13
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - CONFIG: osx_64_variantall
+            UPLOAD_PACKAGES: 'True'
+          - CONFIG: osx_64_variantnovtk
+            UPLOAD_PACKAGES: 'True'
+          - CONFIG: osx_arm64_variantall
+            UPLOAD_PACKAGES: 'True'
+          - CONFIG: osx_arm64_variantnovtk
+            UPLOAD_PACKAGES: 'True'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run OSX build
+        run: ./.scripts/run_osx_build.sh
+        env:
+          CONFIG: ${{ matrix.CONFIG }}
+          UPLOAD_PACKAGES: ${{ matrix.UPLOAD_PACKAGES }}
+          CI: github_actions
+          flow_run_id: github_actions_${{ github.run_id }}.${{ github.run_attempt }}
+          remote_url: ${{ github.repositoryUrl }}
+          sha: ${{ github.sha }}
+          OSX_FORCE_SDK_DOWNLOAD: '1'
+          GIT_BRANCH: ${{ github.ref_name }}
+          FEEDSTOCK_NAME: ${{ github.event.repository.name }}
+          IS_PR_BUILD: ${{ github.event_name == 'pull_request' && 'True' || 'False' }}
+          BINSTAR_TOKEN: ${{ secrets.BINSTAR_TOKEN }}
+          FEEDSTOCK_TOKEN: ${{ secrets.FEEDSTOCK_TOKEN }}
+          STAGING_BINSTAR_TOKEN: ${{ secrets.STAGING_BINSTAR_TOKEN }}

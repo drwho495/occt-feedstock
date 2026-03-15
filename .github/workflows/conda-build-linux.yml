@@ -1,0 +1,72 @@
+# This file was generated automatically from conda-smithy. To update this configuration,
+# update the conda-forge.yml and/or the recipe/meta.yaml.
+# -*- mode: yaml -*-
+
+name: Linux
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.CONFIG }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - CONFIG: linux_64_variantall
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_64_variantnovtk
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_aarch64_variantall
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_aarch64_variantnovtk
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_ppc64le_variantall
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+          - CONFIG: linux_ppc64le_variantnovtk
+            UPLOAD_PACKAGES: 'True'
+            DOCKER_IMAGE: quay.io/condaforge/linux-anvil-cos7-x86_64
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Configure qemu binfmt-misc for cross-platform containers
+      - name: Configure binfmt_misc
+        if: "!startsWith(matrix.CONFIG, 'linux_64')"
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
+          ls /proc/sys/fs/binfmt_misc/
+
+      - name: Run docker build
+        run: .scripts/run_docker_build.sh
+        env:
+          CONFIG: ${{ matrix.CONFIG }}
+          UPLOAD_PACKAGES: ${{ matrix.UPLOAD_PACKAGES }}
+          DOCKER_IMAGE: ${{ matrix.DOCKER_IMAGE }}
+          CI: github_actions
+          flow_run_id: github_actions_${{ github.run_id }}.${{ github.run_attempt }}
+          remote_url: ${{ github.repositoryUrl }}
+          sha: ${{ github.sha }}
+          GIT_BRANCH: ${{ github.ref_name }}
+          FEEDSTOCK_NAME: ${{ github.event.repository.name }}
+          IS_PR_BUILD: ${{ github.event_name == 'pull_request' && 'True' || 'False' }}
+          BINSTAR_TOKEN: ${{ secrets.BINSTAR_TOKEN }}
+          FEEDSTOCK_TOKEN: ${{ secrets.FEEDSTOCK_TOKEN }}
+          STAGING_BINSTAR_TOKEN: ${{ secrets.STAGING_BINSTAR_TOKEN }}
