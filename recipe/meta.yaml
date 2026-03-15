@@ -1,4 +1,4 @@
-{% set name = "occt" %}
+{% set name = "occt-dw" %}
 {% set version = "7.8.0" %}
 {% set build = 0 %}
 
@@ -11,9 +11,8 @@ package:
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.gz
-  url: http://git.dev.opencascade.org/gitweb/?p=occt.git;a=snapshot;h=V{{ version.replace(".", "_") }};sf=tgz
-  sha256: e6aee3adc653e667e4881333f088778d8ddc0099d9898972af3b44b0235cd6bb
+  git_url: https://github.com/drwho495/occt
+  git_rev: CombinedBranch
   patches:
     - patches/blobfish.patch
 
@@ -23,7 +22,7 @@ build:
   run_exports:
     # ABI changes between minor versions, see e.g.
     # https://github.com/conda-forge/occt-feedstock/issues/97
-    - {{ pin_subpackage('occt', max_pin='x.x.x') }}
+    - {{ pin_subpackage('occt-dw', max_pin='x.x.x') }}
   script_env:
     - USE_VTK=OFF  # [variant=='novtk']
     - USE_VTK=ON  # [variant=='all']
