@@ -15,6 +15,7 @@ source:
   git_rev: CombinedBranch
   patches:
     - patches/blobfish.patch
+    - patches/fix-freetype-tags-cast.patch
 
 build:
   number: {{ build }}
